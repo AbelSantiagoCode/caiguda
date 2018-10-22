@@ -18,6 +18,7 @@ class TestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     protected function arrayPmapejats($pms)
     {
       $value = array();
@@ -30,69 +31,103 @@ class TestController extends Controller
       	}
 
       }
-
-      //print_r($value);
       return $value;
     }
-    public function test()
+
+    protected function getSectors()
     {
-       // Get devices
-       /*$positonsSector = Position::where('sector_id','=','B')->get();
-       echo $positonsSector;
-       echo "<br>";
+      $sectors = Sector::all();
+      $array_sectors = array();
 
-       $postions = array();
-       foreach ($positonsSector as $positonSector) {
-         $positons[] = $positonSector->id;
-         echo $positonSector->id;
-       }
-       echo "<br>";
-       var_dump($positons);
-       echo "<br>";
-
-       $Pmapejats = DB::table('position_ssid')
-                  ->whereIn('position_id', $positons)
-                  ->get();
-      echo $Pmapejats;
-      echo "<br>";*/
-
-
-       $sectors = Sector::all();
-
-       foreach ($sectors as $sector) {
-         echo $sector;
-         echo "<br>";
-         echo $sector['id'];
-         echo "<br>";
-         $positonsSector = Position::where('sector_id','=',$sector->id)->get();
-         $positions = array();
-         foreach ($positonsSector as $positonSector) {
-           $positions[] = $positonSector->id;
-         }
-
-         $Pmapejats = DB::table('position_ssid')
-                    ->whereIn('position_id', $positions)
-                    ->get();
-        echo $Pmapejats;
-        echo "<br>";
-        $results = $this->arrayPmapejats($Pmapejats);
-        foreach ($results as $key => $result) {
-          echo "<br>";
-          echo "<br>";
-          echo $key;echo "<br>";
-          var_dump($result);
-          echo "<br>";
-          echo "<br>";
+      foreach ($sectors as $sector) {
+        $positonsSector = Position::where('sector_id','=',$sector->id)->get();
+        $positions = array();
+        foreach ($positonsSector as $positonSector) {
+          $positions[] = $positonSector->id;
         }
-        echo "<br>";
 
+        $Pmapejats = DB::table('position_ssid')->whereIn('position_id', $positions)->get();
+        $results = $this->arrayPmapejats($Pmapejats);
+        $array_sectors[$sector['id']] = $results;
+      }
+      return $array_sectors;
+    }
+    /*
+    */
 
-        // Algorithm to locate the position (mininum error) by sectors
+    protected function minimun($value)
+    {
+      $minimun_error=0;
+      $minimun_position=0;
+      $minimun_sector=0;
+      $init = true;
+      foreach ($value as $sector => $position_error) {
+        if ($init== true) {
+          $minimun_error=$position_error[1];
+          $minimun_position=$position_error[0];
+          $minimun_sector=$sector;
+          $init=false;
+        }
+        else if($position_error[1]<=$minimun_error){
+          $minimun_error=$position_error[1];
+          $minimun_position=$position_error[0];
+          $minimun_sector=$sector;
+        }
+      }
+      return array($minimun_sector,$minimun_position,$minimun_error);
+    }
 
+    protected function algorithm($caiguda)
+    {
+      //$caiguda = array(array('AP_1',16),array('AP_2',45),array('AP_3',30));
+      $sectors = $this->getSectors();
+      $minimun_sector = array();
+      foreach ($sectors as $sector_key => $sector_value) {
+        $array_resta = array();
+        foreach ($sector_value as $position_key => $position_value) {
+          $resta = 0;
+          foreach ($caiguda as $mapeig_c) {
+            foreach ($position_value as $mapeig_p) {
+              if ($mapeig_c[0] == $mapeig_p[0]) {
+                $resta = abs(abs($mapeig_c[1])-abs($mapeig_p[1])) + $resta;
+                break;
+              }
+            }
+          }
+          $array_resta[$position_key] = $resta;
+        }
+         $minimun_error =  min($array_resta);
+         $minimun_p = array_search($minimun_error,$array_resta);
+          // echo "<br>minimunPosition<br>";
+          // print_r($minimun_p);
+          // echo "<br>minimunRSSI<br>";
+          // print_r($minimun_error);
+          // echo "<br>array resta<br>";
+          // print_r($array_resta);
+         $minimun_sector[$sector_key]=array($minimun_p,$minimun_error);
+          // echo "<br>minimun_sector: sector=> position_minimun<br>";
+          // print_r($minimun_sector);
 
       }
+       $localitzation = $this->minimun($minimun_sector);
+       // echo "<br>POSITION:<br>";
+       // print_r($minimun_position);
+       echo "<br>SECTOR:<br>";
+       print_r($localitzation);
+    }
 
 
+
+    public function test()
+    {
+      $caiguda = array(array('AP_1',10),array('AP_2',20),array('AP_3',15));
+      $this->algorithm($caiguda);
+
+      $caiguda = array(array('AP_1',16),array('AP_2',45),array('AP_3',30));
+      $this->algorithm($caiguda);
+
+      $caiguda = array(array('AP_1',13),array('AP_2',18),array('AP_3',5));
+      $this->algorithm($caiguda);
     }
 
     public function index()
@@ -124,15 +159,20 @@ class TestController extends Controller
      */
     public function store(Request $request)
     {
-      $ids = explode(";",$request->input('id'));
+      $result = array();
+      $ids = explode(";",$request->input('ssids_rssis'));
       foreach ($ids as $id) {
-        $device = new Device;
-        $device->id = $id;
-        $device->position_id = $request->input('position');
-        $device->save();
+        $ssid_rssi = explode(",",$id);
+        $result[]=$ssid_rssi;
       }
+      //foreach ($ids as $id) {
+      //  $device = new Device;
+      //  $device->id = $id;
+      //  $device->position_id = $request->input('position');
+      //  $device->save();
+      //}
 
-      return new TestResource($ids);
+      return new TestResource($result);
     }
 
     /**
