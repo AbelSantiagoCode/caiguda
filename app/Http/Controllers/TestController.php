@@ -77,57 +77,127 @@ class TestController extends Controller
       return array($minimun_sector,$minimun_position,$minimun_error);
     }
 
+
+    // protected function len($variable)
+    // {
+    //   $count=0;
+    //   foreach ($variable as $i) {
+    //     $count++;
+    //   }
+    //   return $count;
+    // }
+
+    protected function rateConincidence($PosMapeig1,$PosMapeig2)
+    {
+      //$lenPM1 = $this->len($PosMapeig1);
+      $lenPM1 = count($PosMapeig1);
+      $RateThreshold_PM1 = round($lenPM1*0.7); // 70% of rate coincidence
+      $coincidence = 0;
+      foreach ($PosMapeig1 as $ssid_rssi1) {
+        foreach ($PosMapeig2 as $ssid_rssi2) {
+          if($ssid_rssi1[0]==$ssid_rssi2[0]){
+            $coincidence++;
+          }
+        }
+      }
+      // echo "<br>RateCoincidence:<br>";
+      // print_r($RateThreshold_PM1);
+      // echo "<br>COINCIDENCE:<br>";
+      // print_r($coincidence);
+      if ($coincidence >= $RateThreshold_PM1) {
+        return true;
+      }
+      return false;
+
+    }
+
     protected function algorithm($caiguda)
     {
-      //$caiguda = array(array('AP_1',16),array('AP_2',45),array('AP_3',30));
+      $coincidence = false;
       $sectors = $this->getSectors();
       $minimun_sector = array();
       foreach ($sectors as $sector_key => $sector_value) {
         $array_resta = array();
         foreach ($sector_value as $position_key => $position_value) {
           $resta = 0;
-          foreach ($caiguda as $mapeig_c) {
-            foreach ($position_value as $mapeig_p) {
-              if ($mapeig_c[0] == $mapeig_p[0]) {
-                $resta = abs(abs($mapeig_c[1])-abs($mapeig_p[1])) + $resta;
-                break;
+          if ($this->rateConincidence($position_value,$caiguda)) {
+            if ($coincidence == false) {
+              $coincidence = true;
+            }
+            foreach ($caiguda as $mapeig_c) {
+              foreach ($position_value as $mapeig_p) {
+                if ($mapeig_c[0] == $mapeig_p[0]) {
+                  $resta = abs(abs($mapeig_c[1])-abs($mapeig_p[1])) + $resta;
+                  break;
+                }
               }
             }
+            $array_resta[$position_key] = $resta;
           }
-          $array_resta[$position_key] = $resta;
         }
-         $minimun_error =  min($array_resta);
-         $minimun_p = array_search($minimun_error,$array_resta);
+        if ($coincidence == true) {
+          $minimun_error =  min($array_resta);
+          $minimun_p = array_search($minimun_error,$array_resta);
           // echo "<br>minimunPosition<br>";
           // print_r($minimun_p);
           // echo "<br>minimunRSSI<br>";
           // print_r($minimun_error);
           // echo "<br>array resta<br>";
           // print_r($array_resta);
-         $minimun_sector[$sector_key]=array($minimun_p,$minimun_error);
+          $minimun_sector[$sector_key]=array($minimun_p,$minimun_error);
           // echo "<br>minimun_sector: sector=> position_minimun<br>";
           // print_r($minimun_sector);
+        }
 
       }
-       $localitzation = $this->minimun($minimun_sector);
-       // echo "<br>POSITION:<br>";
-       // print_r($minimun_position);
-       echo "<br>SECTOR:<br>";
-       print_r($localitzation);
+      if ($coincidence == true) {
+        $localitzation = $this->minimun($minimun_sector);
+        // echo "<br>POSITION:<br>";
+        // print_r($minimun_position);
+        echo "<br>SECTOR:<br>";
+        print_r($localitzation);
+        return true;
+      }
+      return false;
     }
 
 
 
     public function test()
     {
-      $caiguda = array(array('AP_1',10),array('AP_2',20),array('AP_3',15));
+      $caiguda = array(array('AP_1',10));//,array('AP_2',20),array('AP_3',15));
       $this->algorithm($caiguda);
 
-      $caiguda = array(array('AP_1',16),array('AP_2',45),array('AP_3',30));
+      $caiguda = array(array('AP_1',16),array('AP_2',45));//,array('AP_3',30));
       $this->algorithm($caiguda);
 
       $caiguda = array(array('AP_1',13),array('AP_2',18),array('AP_3',5));
       $this->algorithm($caiguda);
+
+
+
+
+      //$caiguda = array(array('AP_1',16),array('AP_2',45),array('AP_3',30));
+/*      $sectors = $this->getSectors();
+      echo "<br>count <br>";
+      print_r(count($caiguda));
+
+      foreach ($sectors as $sector_key => $sector_value) {
+
+        foreach ($sector_value as $position_key => $position_value) {
+          $resta = 0;
+          if ($this->rateConincidence($position_value,$caiguda)) {
+            echo "<br>Position_value<br>";
+            print_r($position_value);
+            echo "<br>Caiguda<br>";
+            print_r($caiguda);
+            echo "<br><br>";
+
+          }
+        }
+      }
+  */
+
     }
 
     public function index()
