@@ -38,7 +38,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Auth::routes();
 
-//Route::resource('users','UserController');
+
 
 Route::middleware('auth')->group(function() {
 
@@ -105,7 +105,10 @@ Route::middleware('auth')->group(function() {
   });
 
 
-  //Route::resource('caiguda', 'CaigudaController');
+  // MESSAGE CONTROLLER
+  Route::prefix('message')->group(function() {
+    Route::get('/show','MessageController@show');
+  });
 
 
 

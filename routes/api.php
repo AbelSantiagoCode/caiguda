@@ -19,5 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 // List TestResource
-Route::get('test','AlgorithmController@index');
-Route::post('test','AlgorithmController@store');
+Route::get('test','TestController@alertMessage');
+Route::post('test','TestController@store');
