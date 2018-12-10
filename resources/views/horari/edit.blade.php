@@ -42,7 +42,7 @@
 
 							<select name="day" id="day" class="form-control input-sm">
 								@php
-								$dies = array('dilluns', 'dimarts', 'dimecres', 'dijous', 'divendres', 'dissabte', 'diumenge');
+								$dies = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
 
 								@endphp
 

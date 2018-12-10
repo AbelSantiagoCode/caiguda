@@ -26,7 +26,6 @@ Route::get('/telegram', function () {
 
 Route::get('caiguda',function(){
 
-  // App\Http\Controllers\CaigudaController@store,'A','dni1'
   $data = [
     'topic_id' => 'onAlertMessage'
   ];
@@ -117,6 +116,8 @@ Route::middleware('auth')->group(function() {
 
   // MESSAGE CONTROLLER
   Route::prefix('caiguda')->group(function() {
+    // store per fer debug!!!
+    Route::get('/store','CaigudaController@store')->name('caiguda.store');
     Route::get('/show','CaigudaController@show')->name('caiguda.show');
     Route::get('/assistit/{id}','CaigudaController@assistit')->name('caiguda.assistit');
   });
