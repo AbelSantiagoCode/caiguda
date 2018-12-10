@@ -8,87 +8,50 @@ use DB;
 
 class CaigudaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
+  
 
-        $caigudes= Caiguda::where('state',true)->get();
-        if(count($caigudes)>0){
-            return view('caiguda.alerta',compact('$caigudes'));
+
+    public function show()
+    {
+        $caigudes=Caiguda::all()->where('state', true);
+
+        if($caigudes->count()){
+            return view('caiguda.show',compact('caigudes'));
         }
         
-        return back();
-      
-        
+        else{
+            return redirect()->route('home');
+        }
+    }
+  
+  
+    public function assistit($id){
+  
+        $caiguda=Caiguda::find($id);
+        $caiguda->state=false;
+        $caiguda->save();
+
+        $data = [
+        'topic_id' => 'onAlertMessage'
+        ];
+        \App\Socket\Pusher::sentDataToServer($data);
+        return redirect()->route('caiguda.show');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+
+
+    public function store($sector, $client)
     {
-        //
+        $caiguda = new Caiguda;
+        $caiguda->client_dni = $client;
+        $caiguda->sector_id = $sector;
+        $caiguda->horari_id = '1';
+        $caiguda->state = true;
+        $caiguda->save();
+
+    
+        return 'OK';
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+    
 }

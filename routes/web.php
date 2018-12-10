@@ -1,6 +1,7 @@
 <?php
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,7 +24,16 @@ Route::get('/telegram', function () {
 });
 
 
+Route::get('caiguda',function(){
 
+  // App\Http\Controllers\CaigudaController@store,'A','dni1'
+  $data = [
+    'topic_id' => 'onAlertMessage'
+  ];
+  \App\Socket\Pusher::sentDataToServer($data);
+  return redirect()->route('caiguda.show');
+
+});
 
 Route::get('/test','TestController@test')->name('test');
 
@@ -106,8 +116,9 @@ Route::middleware('auth')->group(function() {
 
 
   // MESSAGE CONTROLLER
-  Route::prefix('message')->group(function() {
-    Route::get('/show','MessageController@show');
+  Route::prefix('caiguda')->group(function() {
+    Route::get('/show','CaigudaController@show')->name('caiguda.show');
+    Route::get('/assistit/{id}','CaigudaController@assistit')->name('caiguda.assistit');
   });
 
 

@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
           \Position_SsidTableSeeder::class,
           \ClientsTableSeeder::class,
           \DevicesTableSeeder::class,
-	  \HorarisTableSeeder::class,
-	  \CaigudesTableSeeder::class
+	        \HorarisTableSeeder::class,
+	        \CaigudesTableSeeder::class
 
         ]);
     }

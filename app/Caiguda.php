@@ -20,5 +20,10 @@ class Caiguda extends Model
         return $this->belongsTo('App\Horari','horari_id');
     }
 
+    public function client(){
+
+        return $this->belongsTo('App\Client','client_dni');
+    }
+
 
 }
