@@ -15,6 +15,10 @@ class CaigudaController extends Controller
 
     public function show()
     {
+        $data = [
+            'topic_id' => 'onAlertMessage'
+            ];
+            \App\Socket\Pusher::sentDataToServer($data);
         $caigudes=Caiguda::all()->where('state', true);
 
         if($caigudes->count()){
