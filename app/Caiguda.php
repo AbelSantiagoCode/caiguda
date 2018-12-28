@@ -15,10 +15,20 @@ class Caiguda extends Model
 
     }
 
-    public function horari(){
+    // public function horari(){
 
-        return $this->belongsTo('App\Horari','horari_id');
+    //     return $this->belongsTo('App\Horari','horari_id');
+    // }
+
+    public function client(){
+
+        return $this->belongsTo('App\Client','client_dni');
     }
 
+    
+    public function horaris(){
+
+        return $this->belongsToMany('App\Horari','caiguda_horari','caiguda_id','horari_id')->withTimestamps();
+    }
 
 }

@@ -952,6 +952,7 @@
   };
 
       </script>
+      
       <script>
       var conn = new ab.Session('ws://localhost:8080',
       function() {
@@ -960,7 +961,9 @@
           // console.log('New data: topic_id: "' + topic + '"');
           // console.log(data.data);
           // similar behavior as an HTTP redirect
-          window.location.replace("http://127.0.0.1:8000/message/show");
+
+          window.location.replace("http://127.0.0.1:8000/caiguda/show");
+         
         });
       },
       function() {

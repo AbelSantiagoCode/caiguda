@@ -12,130 +12,130 @@ class HorarisTableSeeder extends Seeder
     public function run()
     {
         DB::table('horaris')->insert([
-            'day' => 'dilluns' ,
-            'start' => '00:00:00',
+            'day' => 'Monday' ,
+            'start' => '01:00:00',
             'finish' => '08:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dilluns' ,
+            'day' => 'Monday' ,
             'start' => '08:00:00',
             'finish' => '16:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dilluns' ,
+            'day' => 'Monday' ,
             'start' => '16:00:00',
-            'finish' => '00:00:00'
+            'finish' => '23:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dimarts' ,
-            'start' => '00:00:00',
+            'day' => 'Tuesday' ,
+            'start' => '01:00:00',
             'finish' => '08:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dimarts' ,
+            'day' => 'Tuesday' ,
             'start' => '08:00:00',
             'finish' => '16:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dimarts' ,
+            'day' => 'Tuesday' ,
             'start' => '16:00:00',
-            'finish' => '00:00:00'
+            'finish' => '23:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dimecres' ,
-            'start' => '00:00:00',
+            'day' => 'Wednesday' ,
+            'start' => '01:00:00',
             'finish' => '08:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dimecres' ,
+            'day' => 'Wednesday' ,
             'start' => '08:00:00',
             'finish' => '16:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dimecres' ,
+            'day' => 'Wednesday' ,
             'start' => '16:00:00',
-            'finish' => '00:00:00'
+            'finish' => '23:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dijous' ,
-            'start' => '00:00:00',
+            'day' => 'Thursday' ,
+            'start' => '01:00:00',
             'finish' => '08:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dijous' ,
+            'day' => 'Thursday' ,
             'start' => '08:00:00',
             'finish' => '16:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dijous' ,
+            'day' => 'Thursday' ,
             'start' => '16:00:00',
-            'finish' => '00:00:00'
+            'finish' => '23:00:00'
         ]);
 
 
         DB::table('horaris')->insert([
-            'day' => 'divendres' ,
-            'start' => '00:00:00',
+            'day' => 'Friday' ,
+            'start' => '01:00:00',
             'finish' => '08:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'divendres' ,
+            'day' => 'Friday' ,
             'start' => '08:00:00',
             'finish' => '16:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'divendres' ,
+            'day' => 'Friday' ,
             'start' => '16:00:00',
             'finish' => '00:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dissabte' ,
-            'start' => '00:00:00',
+            'day' => 'Saturday' ,
+            'start' => '01:00:00',
             'finish' => '08:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dissabte' ,
+            'day' => 'Saturday' ,
             'start' => '08:00:00',
             'finish' => '16:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'dissabte' ,
+            'day' => 'Saturday' ,
             'start' => '16:00:00',
-            'finish' => '00:00:00'
+            'finish' => '23:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'diumenge' ,
-            'start' => '00:00:00',
+            'day' => 'Sunday' ,
+            'start' => '01:00:00',
             'finish' => '08:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'diumenge' ,
+            'day' => 'Sunday' ,
             'start' => '08:00:00',
             'finish' => '16:00:00'
         ]);
 
         DB::table('horaris')->insert([
-            'day' => 'diumenge' ,
+            'day' => 'Sunday' ,
             'start' => '16:00:00',
-            'finish' => '00:00:00'
+            'finish' => '23:00:00'
         ]);
         
         

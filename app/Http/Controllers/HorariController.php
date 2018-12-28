@@ -53,6 +53,8 @@ class HorariController extends Controller
         $horari->finish= $request['finish'];
         $horari->save();
 
+        return redirect()->route('horari.index');
+
     }
 
     /**

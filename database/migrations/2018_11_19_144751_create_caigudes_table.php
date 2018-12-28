@@ -15,10 +15,10 @@ class CreateCaigudesTable extends Migration
     {
         Schema::create('caigudes', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('horari_id')->unsigned();
-            $table->foreign('horari_id')->references('id')->on('horaris')->onUpdate('cascade')->onDelete('cascade');;
+            $table->string('client_dni');
+            $table->foreign('client_dni')->references('dni')->on('clients')->onUpdate('cascade')->onDelete('cascade');
             $table->string('sector_id');
-            $table->foreign('sector_id')->references('id')->on('sectors')->onUpdate('cascade')->onDelete('cascade');;
+            $table->foreign('sector_id')->references('id')->on('sectors')->onUpdate('cascade')->onDelete('cascade');
             $table->boolean('state');
             $table->timestamps();
         });

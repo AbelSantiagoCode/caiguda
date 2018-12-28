@@ -37,13 +37,13 @@
 							<div class="form-group">
 
 							<select name="day" id="day" class="form-control input-sm">
-								<option value="dilluns">dilluns</option>
-								<option value="dimarts">dimarts</option>
-								<option value="dimecres">dimecres</option>
-								<option value="dijous">dijous</option>
-								<option value="divendres">divendres</option>
-								<option value="dissabte">dissabte</option>
-								<option value="diumenge">diumenge</option>
+								<option value="Monday">Monday</option>
+								<option value="Tuesday">Tuesday</option>
+								<option value="Wednesday">Wednesday</option>
+								<option value="Thursday">Thursday</option>
+								<option value="Friday">Friday</option>
+								<option value="Saturday">Saturday</option>
+								<option value="Sunday">Sunday</option>
 								
 							</select>
 							</div>

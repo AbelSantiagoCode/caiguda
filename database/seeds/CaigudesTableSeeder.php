@@ -12,11 +12,31 @@ class CaigudesTableSeeder extends Seeder
     public function run()
     {
         Caiguda::create([
-            'horari_id' => 1,
+            'client_dni' => 'dni1',
+            'sector_id' => 'A',
+            'state' => true,
+  
+        ]);
+        Caiguda::create([
+
+            'client_dni' => 'dni2',
+            'sector_id' => 'B',
+            'state' => true,
+  
+        ]);
+        Caiguda::create([
+            'client_dni' => 'dni3',
+            'sector_id' => 'C',
+            'state' => true,
+  
+        ]);
+        Caiguda::create([
+            'client_dni' => 'dni4',
             'sector_id' => 'D',
             'state' => true,
   
         ]);
+
     
     }
 }

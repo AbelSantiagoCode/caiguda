@@ -18,10 +18,15 @@ class Horari extends Model
         return $this->belongsToMany('App\User','horari_user','horari_id','user_dni')->withTimestamps();
     }
 
+    // public function caigudes(){
+
+    //     return $this->hasMany('App\Caigudes');
+
+    // }
+
     public function caigudes(){
 
-        return $this->hasMany('App\Caigudes');
-
+        return $this->belongsToMany('App\Caiguda','caiguda_horari','horari_id','caiguda_id')->withTimestamps();
     }
 
 }

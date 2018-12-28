@@ -18,5 +18,11 @@ class Client extends Model
     return $this->hasOne('App\Device','client_dni','dni');
   }
 
+  public function caigudes(){
+
+    return $this->hasMany('App\Caigudes');
+
+}
+
 
 }
