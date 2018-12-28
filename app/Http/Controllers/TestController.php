@@ -10,14 +10,12 @@ use App\Ssid;
 use App\Sector;
 use App\Http\Resources\Test as TestResource;
 use Illuminate\Support\Facades\DB;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
+
 
 class TestController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
 
     protected function arrayPmapejats($pms)
     {
@@ -52,44 +50,33 @@ class TestController extends Controller
       }
       return $array_sectors;
     }
-    /*
-    */
 
-    protected function minimun($value)
+    protected function minimunPosition($positions_errors)
     {
-      $minimun_error=0;
-      $minimun_position=0;
-      $minimun_sector=0;
-      $init = true;
-      foreach ($value as $sector => $position_error) {
-        if ($init== true) {
-          $minimun_error=$position_error[1];
-          $minimun_position=$position_error[0];
-          $minimun_sector=$sector;
-          $init=false;
+
+      $minimun_error=false;
+      $minimun_position=false;
+      $flagInit = false;
+      foreach ($positions_errors as $position_error) {
+        if ($flagInit == false) {
+          $flagInit = true;
+          $minimun_position = $position_error[0];
+          $minimun_error = $position_error[1];
         }
-        else if($position_error[1]<=$minimun_error){
-          $minimun_error=$position_error[1];
-          $minimun_position=$position_error[0];
-          $minimun_sector=$sector;
+        else if ($minimun_error > $position_error[1] ) {
+          $minimun_error = $position_error[1];
+          $minimun_position = $position_error[0];
         }
       }
-      return array($minimun_sector,$minimun_position,$minimun_error);
+      return array($minimun_position,$minimun_error);
+
     }
 
 
-    // protected function len($variable)
-    // {
-    //   $count=0;
-    //   foreach ($variable as $i) {
-    //     $count++;
-    //   }
-    //   return $count;
-    // }
+
 
     protected function rateConincidence($PosMapeig1,$PosMapeig2)
     {
-      //$lenPM1 = $this->len($PosMapeig1);
       $lenPM1 = count($PosMapeig1);
       $RateThreshold_PM1 = round($lenPM1*0.7); // 70% of rate coincidence
       $coincidence = 0;
@@ -100,10 +87,7 @@ class TestController extends Controller
           }
         }
       }
-      // echo "<br>RateCoincidence:<br>";
-      // print_r($RateThreshold_PM1);
-      // echo "<br>COINCIDENCE:<br>";
-      // print_r($coincidence);
+
       if ($coincidence >= $RateThreshold_PM1) {
         return true;
       }
@@ -113,72 +97,84 @@ class TestController extends Controller
 
     protected function algorithm($caiguda)
     {
-      $coincidence = false;
       $sectors = $this->getSectors();     // Obtenim els sector
-      $minimun_sector = array();          // el minim error per cada sector amb la posicio indicada.
+      $errorThreshold = 13;               // ERROR THRESHOLD QUE DETERMINA SI L'ERROR ASSOCIAT A UNA POSICIÓ ÉS ACCEPTABLE O NO.
+      $aviablePositions = false;          // FLAG QUE DETERMINA SI EXISTEIXEN POSICONS QUE HAN SUPERAT ELS FILTRES DE L'ALGORISME.
+      $sectorsPositions = array();        // $sectorsPositions = [ [sector]=>[ (position1,error1),(position2,error2),.. ] , [sector]=>[ (position1,error1),(position2,error2),.. ] , [] , []]
+      $sectorsCounters = array();         // $sectorsCounters = [ [sector] => [counter],[sector2] => [counter2] ]
 
-       //echo "<br>minimun_sector: sector=> position_minimun<br>";
-       //print_r($minimun_sector);
+
+      /*
+      *
+      * INITIALIZATION OF $sectorsPositions AND $sectorsCounters
+      *
+      */
+      foreach ($sectors as $sector => $positions) {
+        $sectorsCounters[$sector]=0;
+        $sectorsPositions[$sector]=array();
+      }
 
 
-       //dd($sectors);
+      /*
+      *
+      * OBTENIR EL NOMBRE TOTAL DE POSCIONS I DETERMINAR QUINES POSICIONS, ON EL SEU ERROR ÉS INFERIOR A $errorThreshold PER CADA SECTOR RESPECTE LA VARIABLE $caiguda.
+      *
+      */
+      foreach ($sectors as $sector => $positions) {
 
-       //dd($minimun_sector);
-
-      foreach ($sectors as $sector_key => $sector_value) {
-        $array_resta = array();
-        foreach ($sector_value as $position_key => $position_value) {
-          $resta = 0;
-          if ($this->rateConincidence($position_value,$caiguda)) {
-            if ($coincidence == false) {
-              $coincidence = true;
-            }
-            foreach ($caiguda as $mapeig_c) {
-              foreach ($position_value as $mapeig_p) {
-                if ($mapeig_c[0] == $mapeig_p[0]) {
-                  $resta = abs(abs($mapeig_c[1])-abs($mapeig_p[1])) + $resta;
+        // BUCLE PER OBTENIR EN UN ARRAY L'ERROR D'AQUELLES POSICIONS QUE SUPERIN EL rateConincidence RESPECTE LA $caiguda.
+        $positions_errors = array();
+        foreach ($positions as $position => $ssids_rssis) {
+          $error = 0;
+          if ($this->rateConincidence($ssids_rssis,$caiguda)) {
+            foreach ($caiguda as $ssid_rssi_caiguda) {
+              foreach ($ssids_rssis as $ssid_rssi_position) {
+                if ($ssid_rssi_caiguda[0] == $ssid_rssi_position[0]) {
+                  $error = abs(abs($ssid_rssi_caiguda[1])-abs($ssid_rssi_position[1])) + $error;
                   break;
                 }
               }
             }
-            $array_resta[$position_key] = $resta;
+            $positions_errors[$position] = $error;
           }
         }
-        if ($coincidence == true) {
 
-
-          /*
-          treball amb $array_resta per millorar l'algorisme. Aquest conté pel sector actual ($sector_key) una llista de [position1=>error,position2=>error]
-          */
-          $minimun_error =  min($array_resta);  //  trobar l'error mínim d'una llista [position1=>error,position2=>error] :             $array_resta[$position_key] = $resta;
-
-          $minimun_p = array_search($minimun_error,$array_resta); // trobar la posició corresponent a l'error mínim.
-          //echo "<br>minimunPosition<br>";
-          //print_r($minimun_p);
-          // echo "<br>minimunRSSI<br>";
-          // print_r($minimun_error);
-          echo "<br><br>";
-          print_r($sector_key);
-          echo "<br>array resta<br>";
-          print_r($array_resta);
-          echo "<br><br>";
-
-
-
-          $minimun_sector[$sector_key]=array($minimun_p,$minimun_error);
-
-           //echo "<br>minimun_sector: sector=> position_minimun<br>";
-           //print_r($minimun_sector);
+        // FILTRE PER OBTENIR EL NOMBRE TOTAL DE POSCIONS I DETERMINAR QUINES POSICIONS, ON EL SEU ERROR ÉS INFERIOR A $errorThreshold PER CADA SECTOR
+        if ($positions_errors != NULL) {
+          foreach ($positions_errors as $position => $error) {
+            if ($error <= $errorThreshold) {
+              $aviablePositions = true;
+              $sectorsCounters[$sector]++;
+              $sectorsPositions[$sector][]=array($position,$error);
+            }
+          }
         }
-
       }
-      if ($coincidence == true) {
-        $localitzation = $this->minimun($minimun_sector);
-        // echo "<br>POSITION:<br>";
-        // print_r($minimun_position);
-        echo "<br><br>";
-        echo "<br>SECTOR:<br>";
-        print_r($localitzation);
+
+      /*
+      *
+      *  LOCALIZATION
+      *
+      */
+      if ($aviablePositions == true) {
+        // FILTRE PER OBTENIR EL SECTOR QUE TÉ MÉS POSICIONS QUE HAN SUPERAT EL FILTRE ASSOCIAT A $errorThreshold.
+        $MaxCounter = false;
+        $SectorMaxCounter = false;
+        foreach ($sectorsCounters as $sector => $counter) {
+          if ($MaxCounter == false) {
+            $MaxCounter = $counter;
+            $SectorMaxCounter = $sector;
+          }
+          if ($counter > $MaxCounter ) {
+            $MaxCounter = $counter;
+            $SectorMaxCounter = $sector;
+          }
+        }
+        $localizacion= $this->minimunPosition($sectorsPositions[$SectorMaxCounter]);
+        echo "<br>POSITION , ERROR <br>";
+        print_r($localizacion); //$minimun_position,$minimun_error
+        echo "<br>SECTOR<br>";
+        print_r($SectorMaxCounter);
         echo "<br>-------------------------------------<br>";
         return true;
       }
@@ -189,132 +185,40 @@ class TestController extends Controller
 
     public function test()
     {
-      // Displar in this order : $minimun_sector,$minimun_position,$minimun_error
       $caiguda = array(array('AP_1',10),array('AP_2',20),array('AP_3',15));
       $this->algorithm($caiguda);
 
-      $caiguda = array(array('AP_1',16),array('AP_2',45),array('AP_3',30));
+      $caiguda = array(array('AP_1',16),array('AP_2',25),array('AP_3',17));
       $this->algorithm($caiguda);
 
       $caiguda = array(array('AP_1',13),array('AP_2',18),array('AP_3',5));
       $this->algorithm($caiguda);
 
-
-
-
-      //$caiguda = array(array('AP_1',16),array('AP_2',45),array('AP_3',30));
-/*      $sectors = $this->getSectors();
-      echo "<br>count <br>";
-      print_r(count($caiguda));
-
-      foreach ($sectors as $sector_key => $sector_value) {
-
-        foreach ($sector_value as $position_key => $position_value) {
-          $resta = 0;
-          if ($this->rateConincidence($position_value,$caiguda)) {
-            echo "<br>Position_value<br>";
-            print_r($position_value);
-            echo "<br>Caiguda<br>";
-            print_r($caiguda);
-            echo "<br><br>";
-
-          }
-        }
-      }
-  */
-
+      //$this->storeCaiguda();
+      //$this->alertMessage();
+      //$this->sendTelegram();
     }
 
-    public function index()
+    protected function sendTelegram()
     {
-      // Get devices
-      $devices = Device::all();
-
-
-      // Return collection of articles as a resource
-      return TestResource::collection($devices);
-
+      $client = new Client(); //GuzzleHttp\Client
+      $result = $client->post('https://api.telegram.org/bot615582162:AAGgt4fbrWwCtNCzEltixeg4r1_-WXay2AI/sendMessage', [
+        'form_params' => [
+            'chat_id'  => '-1001271064871',
+            'text'     => 'Prova text desde Laravel'
+        ]
+      ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+
+    protected function alertMessage()
     {
-        //
+      $data = [
+        'topic_id' => 'onAlertMessage',
+        'data'     => 'FALL DETECTED '.'somData'.rand(1,100)
+      ];
+      \App\Socket\Pusher::sentDataToServer($data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-      $result = array();
-      $ids = explode(";",$request->input('ssids_rssis'));
-      foreach ($ids as $id) {
-        $ssid_rssi = explode(",",$id);
-        $result[]=$ssid_rssi;
-      }
-      //foreach ($ids as $id) {
-      //  $device = new Device;
-      //  $device->id = $id;
-      //  $device->position_id = $request->input('position');
-      //  $device->save();
-      //}
-      // return redirect()->route('users.index');
-      //return view('test');
-
-
-      return new TestResource($result);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
+
