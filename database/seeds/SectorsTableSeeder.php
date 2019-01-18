@@ -13,25 +13,37 @@ class SectorsTableSeeder extends Seeder
     {
 
         DB::table('sectors')->insert([
-            'id' => 'A',
+            'id' => '1224',
          
         ]);
         DB::table('sectors')->insert([
-            'id' => 'B',
+            'id' => '1215',
          
         ]);
         DB::table('sectors')->insert([
-            'id' => 'C',
+            'id' => '1217',
          
         ]);
         DB::table('sectors')->insert([
-            'id' => 'D',
+            'id' => '1211',
          
         ]);
         DB::table('sectors')->insert([
-            'id' => 'E',
+            'id' => '1214',
          
         ]);
+
+        DB::table('sectors')->insert([
+            'id' => '1233',
+         
+        ]);
+
+        
+        DB::table('sectors')->insert([
+            'id' => '1227',
+         
+        ]);
+
             
     
     }

@@ -239,22 +239,28 @@ class TestController extends Controller
 
     public function testPost(Request $request)
     {
+    
       $idPlaca = $request->input('idPlaca');
       $ssids_rssis = $request->input('ssids_rssis');
 
       $device = Device::find($idPlaca);
       $client = $device->client_dni;
 
+      // $this->sendTelegram('CAIGUDA_4',"12276");
+      // $this->sendTelegram($client,$ssids_rssis);
+      // return 'ok';
+     
       $caiguda = array();
       $positions = explode(";",$ssids_rssis);
+   
       foreach ($positions as $position) {
+
         $ssid_rssi = explode(",",$position);
         $caiguda[]=array($ssid_rssi[0],intval($ssid_rssi[1]));
       }
 
-      // $this->sendTelegram($client,$ssids_rssis);
-      // return $caiguda;
 
+    
       $SectorLocalization=$this->algorithm($caiguda);
 
       if ($SectorLocalization != false) {
@@ -262,7 +268,11 @@ class TestController extends Controller
         $this->alertMessage();
         $this->sendTelegram($client,$SectorLocalization);
       }
+
+
+
     }
+
 
 
 }

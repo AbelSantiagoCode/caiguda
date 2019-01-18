@@ -20,4 +20,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // List TestResource
 Route::get('test','TestController@alertMessage');
-Route::post('test','TestController@store');
+Route::post('test','TestController@testPost');

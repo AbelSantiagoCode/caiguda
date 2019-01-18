@@ -48,16 +48,16 @@ class CaigudaController extends Controller
     }
 
 
-
+    //DEBUG
     public function store()
     {
         
         $client='dni1';
-        $sector='B';
+        $position='12112';
 
         $caiguda = new Caiguda;
         $caiguda->client_dni = $client;
-        $caiguda->sector_id = $sector;
+        $caiguda->position_id = $position;
         $caiguda->state = true;
         $caiguda->save();
 

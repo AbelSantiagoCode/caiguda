@@ -15,7 +15,10 @@ class SsidsTableSeeder extends Seeder
       DB::table('ssids')->insert([
         ['id'=>'AP_1'],
         ['id'=>'AP_2'],
-        ['id'=>'AP_3']
+        ['id'=>'AP_3'],
+        ['id'=>'AP_4'],
+        ['id'=>'AP_5'],
+        ['id'=>'AP_6'],
       ]);
 
     }

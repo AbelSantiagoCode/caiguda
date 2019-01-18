@@ -13,26 +13,21 @@ class CaigudesTableSeeder extends Seeder
     {
         Caiguda::create([
             'client_dni' => 'dni1',
-            'sector_id' => 'A',
+            'sector_id' => '1211',
             'state' => true,
   
         ]);
         Caiguda::create([
 
             'client_dni' => 'dni2',
-            'sector_id' => 'B',
+            'sector_id' => '1214',
             'state' => true,
   
         ]);
-        Caiguda::create([
-            'client_dni' => 'dni3',
-            'sector_id' => 'C',
-            'state' => true,
-  
-        ]);
+   
         Caiguda::create([
             'client_dni' => 'dni4',
-            'sector_id' => 'D',
+            'sector_id' => '1227',
             'state' => true,
   
         ]);
