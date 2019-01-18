@@ -98,7 +98,7 @@ class TestController extends Controller
     protected function algorithm($caiguda)
     {
       $sectors = $this->getSectors();     // Obtenim els sector
-      $errorThreshold = 13;               // ERROR THRESHOLD QUE DETERMINA SI L'ERROR ASSOCIAT A UNA POSICIÓ ÉS ACCEPTABLE O NO.
+      $errorThreshold = 30;               // ERROR THRESHOLD QUE DETERMINA SI L'ERROR ASSOCIAT A UNA POSICIÓ ÉS ACCEPTABLE O NO.
       $aviablePositions = false;          // FLAG QUE DETERMINA SI EXISTEIXEN POSICONS QUE HAN SUPERAT ELS FILTRES DE L'ALGORISME.
       $sectorsPositions = array();        // $sectorsPositions = [ [sector]=>[ (position1,error1),(position2,error2),.. ] , [sector]=>[ (position1,error1),(position2,error2),.. ] , [] , []]
       $sectorsCounters = array();         // $sectorsCounters = [ [sector] => [counter],[sector2] => [counter2] ]
@@ -120,8 +120,8 @@ class TestController extends Controller
       * OBTENIR EL NOMBRE TOTAL DE POSCIONS I DETERMINAR QUINES POSICIONS, ON EL SEU ERROR ÉS INFERIOR A $errorThreshold PER CADA SECTOR RESPECTE LA VARIABLE $caiguda.
       *
       */
-      foreach ($sectors as $sector => $positions) {
 
+      foreach ($sectors as $sector => $positions) {
         // BUCLE PER OBTENIR EN UN ARRAY L'ERROR D'AQUELLES POSICIONS QUE SUPERIN EL rateConincidence RESPECTE LA $caiguda.
         $positions_errors = array();
         foreach ($positions as $position => $ssids_rssis) {
@@ -138,6 +138,10 @@ class TestController extends Controller
             $positions_errors[$position] = $error;
           }
         }
+
+        // echo "<br>Postion error<br>";
+        // print_r($positions_errors);
+        // echo "<br><br>";
 
         // FILTRE PER OBTENIR EL NOMBRE TOTAL DE POSCIONS I DETERMINAR QUINES POSICIONS, ON EL SEU ERROR ÉS INFERIOR A $errorThreshold PER CADA SECTOR
         if ($positions_errors != NULL) {
@@ -178,6 +182,7 @@ class TestController extends Controller
         echo "<br>-------------------------------------<br>";
         return $SectorMaxCounter;
       }
+      echo "<br> NOT WORKS- ERROR <br>";
       return false;
     }
 
@@ -185,15 +190,49 @@ class TestController extends Controller
 
     public function test()
     {
+      /*
+      * ERROR  DE THRESHOLD EMPRAT HA ESTAT 30, EL QUAL HA DONAT UNA ACCEPTABLE POSICIÓ PER LES 4 SIMULACIONS.
+      */
 
-      $caiguda = array(array('AP_1',10),array('AP_2',20),array('AP_3',15));
-      $SectorLocalization=$this->algorithm($caiguda);
+      //##################################################
+      //Ideal position's data
+      //$caiguda = array(array('AP_1',81),array('AP_2',69),array('AP_3',71),array('AP_4',92),array('AP_5',81),array('AP_6',78));
 
-      $caiguda = array(array('AP_1',16),array('AP_2',25),array('AP_3',17));
+      //Real position's data
+      //Localització desitjada: Position => 12244; Sector => 1224
+      $caiguda = array(array('AP_1',85),array('AP_2',74),array('AP_3',74),array('AP_4',91),array('AP_5',80),array('AP_6',83));
       $SectorLocalization=$this->algorithm($caiguda);
+      //Comentari: Obtenim el sector 1224 pero a la posició 12242, perque el seu error de desviació és 18, per contra l'error de desviació per 12244 és 19.
 
-      $caiguda = array(array('AP_1',13),array('AP_2',18),array('AP_3',5));
+      //##################################################
+      //Ideal position's data
+      //$caiguda = array(array('AP_1',83),array('AP_2',79),array('AP_3',76),array('AP_4',-1),array('AP_5',86),array('AP_6',85));
+
+      //Real position's data
+      //Localització desitjada: Position => 12245; Sector => 1224
+      $caiguda = array(array('AP_1',78),array('AP_2',76),array('AP_3',74),array('AP_4',-1),array('AP_5',72),array('AP_6',76));
       $SectorLocalization=$this->algorithm($caiguda);
+      //Comentari: Obtenim el sector 1224 pero a la posició 12246, perque el seu error de desviació és 25, per contra l'error de desviació per 12245 és 33.
+
+      //##################################################
+      //Ideal position's data
+      //$caiguda = array(array('AP_1',60),array('AP_2',56),array('AP_3',65),array('AP_4',88),array('AP_5',85),array('AP_6',64));
+
+      //Real position's data
+      //Localització desitjada: Position => 12331; Sector => 1233
+      $caiguda = array(array('AP_1',64),array('AP_2',53),array('AP_3',64),array('AP_4',89),array('AP_5',86),array('AP_6',57));
+      $SectorLocalization=$this->algorithm($caiguda);
+      //Comentari: Obtenim el sector 1233 , error per 12331 és 17 el més petit.
+
+      //##################################################
+      //Ideal position's data
+      //$caiguda = array(array('AP_1',82),array('AP_2',76),array('AP_3',60),array('AP_4',84),array('AP_5',72),array('AP_6',82));
+
+      //Real position's data
+      //Localització desitjada: Position => 12276; Sector => 1227
+      $caiguda = array(array('AP_1',74),array('AP_2',67),array('AP_3',50),array('AP_4',86),array('AP_5',74),array('AP_6',75));
+      $SectorLocalization=$this->algorithm($caiguda);
+      //Comentari: Obtenim el sector 1227 , pero posició 12273 i no pas 12276, perque [12273] => 17 [12274] => 26 [12275] => 17 [12276] => 38 .
 
     }
 
@@ -239,28 +278,22 @@ class TestController extends Controller
 
     public function testPost(Request $request)
     {
-    
       $idPlaca = $request->input('idPlaca');
       $ssids_rssis = $request->input('ssids_rssis');
 
       $device = Device::find($idPlaca);
       $client = $device->client_dni;
 
-      // $this->sendTelegram('CAIGUDA_4',"12276");
-      // $this->sendTelegram($client,$ssids_rssis);
-      // return 'ok';
-     
       $caiguda = array();
       $positions = explode(";",$ssids_rssis);
-   
       foreach ($positions as $position) {
-
         $ssid_rssi = explode(",",$position);
         $caiguda[]=array($ssid_rssi[0],intval($ssid_rssi[1]));
       }
 
+      // $this->sendTelegram($client,$ssids_rssis);
+      // return $caiguda;
 
-    
       $SectorLocalization=$this->algorithm($caiguda);
 
       if ($SectorLocalization != false) {
@@ -268,12 +301,7 @@ class TestController extends Controller
         $this->alertMessage();
         $this->sendTelegram($client,$SectorLocalization);
       }
-
-
-
     }
 
 
-
 }
-
