@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests;
+//use App\Http\Requests;
 use App\Device;
 use App\Position;
 use App\Ssid;
@@ -176,7 +176,7 @@ class TestController extends Controller
         echo "<br>SECTOR<br>";
         print_r($SectorMaxCounter);
         echo "<br>-------------------------------------<br>";
-        return true;
+        return $SectorMaxCounter;
       }
       return false;
     }
@@ -185,27 +185,25 @@ class TestController extends Controller
 
     public function test()
     {
+
       $caiguda = array(array('AP_1',10),array('AP_2',20),array('AP_3',15));
-      $this->algorithm($caiguda);
+      $SectorLocalization=$this->algorithm($caiguda);
 
       $caiguda = array(array('AP_1',16),array('AP_2',25),array('AP_3',17));
-      $this->algorithm($caiguda);
+      $SectorLocalization=$this->algorithm($caiguda);
 
       $caiguda = array(array('AP_1',13),array('AP_2',18),array('AP_3',5));
-      $this->algorithm($caiguda);
+      $SectorLocalization=$this->algorithm($caiguda);
 
-      //$this->storeCaiguda();
-      //$this->alertMessage();
-      //$this->sendTelegram();
     }
 
-    protected function sendTelegram()
+    protected function sendTelegram($param1,$param2)
     {
       $client = new Client(); //GuzzleHttp\Client
       $result = $client->post('https://api.telegram.org/bot615582162:AAGgt4fbrWwCtNCzEltixeg4r1_-WXay2AI/sendMessage', [
         'form_params' => [
             'chat_id'  => '-1001271064871',
-            'text'     => 'Prova text desde Laravel'
+            'text'     => $param1."\n".$param2
         ]
       ]);
     }
@@ -219,6 +217,53 @@ class TestController extends Controller
       ];
       \App\Socket\Pusher::sentDataToServer($data);
     }
+
+    public function storeCaiguda($client,$sector)
+    {
+        $caiguda = new Caiguda;
+        $caiguda->client_dni = $client;
+        $caiguda->sector_id = $sector;
+        $caiguda->state = true;
+        $caiguda->save();
+        date_default_timezone_set('Europe/Madrid');
+        $dayofweek = date('l');
+        $hora= date("H:i:s");
+        $horaris = DB::table('horaris')->select('id')->where('day', $dayofweek)->whereTime('start','<',$hora)->whereTime('finish','>',$hora)->get();
+        foreach($horaris as $horari){
+            $caiguda->horaris()->attach( Horari::find($horari->id) );
+        }
+
+        return 'OK';
+    }
+
+
+    public function testPost(Request $request)
+    {
+      $idPlaca = $request->input('idPlaca');
+      $ssids_rssis = $request->input('ssids_rssis');
+
+      $device = Device::find($idPlaca);
+      $client = $device->client_dni;
+
+      $caiguda = array();
+      $positions = explode(";",$ssids_rssis);
+      foreach ($positions as $position) {
+        $ssid_rssi = explode(",",$position);
+        $caiguda[]=array($ssid_rssi[0],intval($ssid_rssi[1]));
+      }
+
+      // $this->sendTelegram($client,$ssids_rssis);
+      // return $caiguda;
+
+      $SectorLocalization=$this->algorithm($caiguda);
+
+      if ($SectorLocalization != false) {
+        $this->storeCaiguda($client,$SectorLocalization);
+        $this->alertMessage();
+        $this->sendTelegram($client,$SectorLocalization);
+      }
+    }
+
 
 }
 
