@@ -21,13 +21,6 @@ class Sector extends Model
         return $this->belongsToMany('App\User','sector_user','sector_id','user_dni')->withTimestamps();
     }
 
-    public function caigudes(){
-
-      return $this->hasMany('App\Caigudes');
-
-      
-  }
-
 
 
   public function positions()

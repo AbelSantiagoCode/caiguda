@@ -9,16 +9,13 @@ class Caiguda extends Model
     protected $table = 'caigudes';
 
 
-    public function sector(){
+    public function position(){
        
-        return $this->belongsTo('App\Sector','sector_id');
+        return $this->belongsTo('App\Position','position_id');
 
     }
 
-    // public function horari(){
 
-    //     return $this->belongsTo('App\Horari','horari_id');
-    // }
 
     public function client(){
 

@@ -30,6 +30,12 @@ class Position extends Model
 
     }
 
+    public function caigudes(){
+
+      return $this->hasMany('App\Caigudes');
+
+      
+  }
 
 
 }

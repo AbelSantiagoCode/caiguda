@@ -65,12 +65,13 @@ class CaigudaController extends Controller
         $dayofweek = date('l');
         $hora= date("H:i:s");
         $horaris = DB::table('horaris')->select('id')->where('day', $dayofweek)->whereTime('start','<',$hora)->whereTime('finish','>',$hora)->get();
+        $caiguda->horaris()->attach( Horari::find(18));
 
-        foreach($horaris as $horari){
+        // foreach($horaris as $horari){
 
-            $caiguda->horaris()->attach( Horari::find($horari->id) );
+        //     $caiguda->horaris()->attach( Horari::find($horari->id) );
 
-        }
+        // }
    
         return 'OK';
     }

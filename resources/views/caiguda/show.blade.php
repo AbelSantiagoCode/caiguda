@@ -17,6 +17,7 @@
     <th>Nom</th>
     <th>Telèfon contacte</th>
     <th>Sector</th>
+    <th>Mapa</th>
     <th>Assistit</th>
   </thead>
   <tbody>
@@ -24,6 +25,8 @@
     @php
       unset($horaris);
       $horaris = array(); 
+      $position = App\Position::find($caiguda->position_id);
+      $sector_id = $position->sector_id
     @endphp
 
     @foreach($caiguda->horaris->map->id->toArray() as $hor)
@@ -32,7 +35,7 @@
       @endphp
     @endforeach
 
-    @if( count(array_intersect($horaris, $user->horaris->map->id->toArray()))==1 && in_array($caiguda->sector_id, $user->sectors->map->id->toArray()))
+    @if( count(array_intersect($horaris, $user->horaris->map->id->toArray()))==1 && in_array($sector_id, $user->sectors->map->id->toArray()))
     <tr bgcolor="#FF0000">
     @else
     <tr>
@@ -41,7 +44,13 @@
     <td>{{$caiguda->client_dni}}</td>
     <td>{{$caiguda->client->name}}</td>
     <td>{{$caiguda->client->contact_telephone}}</td>
-    <td>{{$caiguda->sector_id}}</td>
+    <td>{{$sector_id}}</td>
+    <td>
+    <img class="card-img-top" src="{{ asset('images/' . $caiguda->position_id . '.png')}}" alt="">
+    <!-- {{'images/' . $caiguda->position_id . '.png'}} -->
+    {{ asset('images/' . $caiguda->position_id . '.png')}}
+    
+    </td>
     <td><a class="btn btn-info btn-xl" href="{{action('CaigudaController@assistit', $caiguda->id)}}" ></a></td>
 
   </tr>
