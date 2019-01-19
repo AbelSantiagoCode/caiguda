@@ -257,11 +257,11 @@ class TestController extends Controller
       \App\Socket\Pusher::sentDataToServer($data);
     }
 
-    public function storeCaiguda($client,$sector)
+    public function storeCaiguda($client,$posicio)
     {
         $caiguda = new Caiguda;
         $caiguda->client_dni = $client;
-        $caiguda->sector_id = $sector;
+        $caiguda->position_id = $posicio;
         $caiguda->state = true;
         $caiguda->save();
         date_default_timezone_set('Europe/Madrid');
