@@ -4,12 +4,24 @@
 
  @if($caigudes->count())
 
+
+ <link rel="stylesheet" href="magnific-popup/magnific-popup.css">
+
+<!-- jQuery 1.7.2+ or Zepto.js 1.0+ -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<!-- Magnific Popup core JS file -->
+<script src="magnific-popup/jquery.magnific-popup.js"></script>
+
+
+
+
+
 <div class="container">
 <div class="alert alert-danger" role="alert">
 <h1>! ! ! CAIGUDA ! ! ! </h1>
 </div>
 <br>
-
 
 <table class="table">
   <thead>
@@ -46,10 +58,15 @@
     <td>{{$caiguda->client->contact_telephone}}</td>
     <td>{{$sector_id}}</td>
     <td>
-    <img class="card-img-top" src="{{ asset('images/' . $caiguda->position_id . '.png')}}" alt="">
-    <!-- {{'images/' . $caiguda->position_id . '.png'}} -->
-    {{ asset('images/' . $caiguda->position_id . '.png')}}
-    
+
+    <a class="test-popup-link" href="{{ url('/') }}/images/{{$caiguda->position_id}}.png">Mapa</a>
+
+    <script>
+    $('.test-popup-link').magnificPopup({
+      type: 'image'
+    });
+    </script>
+
     </td>
     <td><a class="btn btn-info btn-xl" href="{{action('CaigudaController@assistit', $caiguda->id)}}" ></a></td>
 
@@ -57,6 +74,7 @@
 
   @endforeach
 
+ 
 @else
 
 No hi ha caigudes
@@ -67,6 +85,10 @@ No hi ha caigudes
   </tbody>
 </table>
 </div>
+
+
+
+
 
 
 
