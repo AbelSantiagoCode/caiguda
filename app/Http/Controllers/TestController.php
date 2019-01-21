@@ -139,10 +139,6 @@ class TestController extends Controller
           }
         }
 
-        // echo "<br>Postion error<br>";
-        // print_r($positions_errors);
-        // echo "<br><br>";
-
         // FILTRE PER OBTENIR EL NOMBRE TOTAL DE POSCIONS I DETERMINAR QUINES POSICIONS, ON EL SEU ERROR ÉS INFERIOR A $errorThreshold PER CADA SECTOR
         if ($positions_errors != NULL) {
           foreach ($positions_errors as $position => $error) {
@@ -173,16 +169,20 @@ class TestController extends Controller
             $MaxCounter = $counter;
             $SectorMaxCounter = $sector;
           }
+          else if ($counter == $MaxCounter){
+            $pos_error1= $this->minimunPosition($sectorsPositions[$sector]);
+            $pos_error2= $this->minimunPosition($sectorsPositions[$SectorMaxCounter]);
+            if($pos_error1[1] < $pos_error2[1]){
+              $MaxCounter = $counter;
+              $SectorMaxCounter = $sector;
+            }
+          }
         }
-        $localizacion= $this->minimunPosition($sectorsPositions[$SectorMaxCounter]);
-        echo "<br>POSITION , ERROR <br>";
-        print_r($localizacion); //$minimun_position,$minimun_error
-        echo "<br>SECTOR<br>";
-        print_r($SectorMaxCounter);
-        echo "<br>-------------------------------------<br>";
-        return $SectorMaxCounter;
+        $localitzacion= $this->minimunPosition($sectorsPositions[$SectorMaxCounter]);
+
+        return $localitzacion[0];
       }
-      echo "<br> NOT WORKS- ERROR <br>";
+
       return false;
     }
 
@@ -236,16 +236,39 @@ class TestController extends Controller
 
     }
 
+
+
     protected function sendTelegram($param1,$param2)
     {
       $client = new Client(); //GuzzleHttp\Client
       $result = $client->post('https://api.telegram.org/bot615582162:AAGgt4fbrWwCtNCzEltixeg4r1_-WXay2AI/sendMessage', [
         'form_params' => [
             'chat_id'  => '-1001271064871',
-            'text'     => $param1."\n".$param2
+            'text'     => "Client: ".$param1."\n"
         ]
       ]);
+
+      $result = $client->post('https://api.telegram.org/bot615582162:AAGgt4fbrWwCtNCzEltixeg4r1_-WXay2AI/sendPhoto', [
+          'form_params' => [
+              'chat_id'  => '-1001271064871',
+              'photo' => "https://raw.githubusercontent.com/AbelSantiagoCode/caiguda/master/public/images/".$param2
+          ]
+          ]);
+
+
     }
+
+    protected function sendTelegram2($param1,$param2)
+  {
+    $client = new Client(); //GuzzleHttp\Client
+    $result = $client->post('https://api.telegram.org/bot615582162:AAGgt4fbrWwCtNCzEltixeg4r1_-WXay2AI/sendMessage', [
+      'form_params' => [
+          'chat_id'  => '-1001271064871',
+          'text'     => $param1."\n".$param2
+      ]
+    ]);
+  }
+
 
 
     protected function alertMessage()
@@ -280,9 +303,11 @@ class TestController extends Controller
     {
       $idPlaca = $request->input('idPlaca');
       $ssids_rssis = $request->input('ssids_rssis');
+      //$tipus_caiguda = $request->input('tipus_caiguda');
 
       $device = Device::find($idPlaca);
       $client = $device->client_dni;
+
 
       $caiguda = array();
       $positions = explode(";",$ssids_rssis);
@@ -290,18 +315,16 @@ class TestController extends Controller
         $ssid_rssi = explode(",",$position);
         $caiguda[]=array($ssid_rssi[0],intval($ssid_rssi[1]));
       }
+      $PosicioLocalization=$this->algorithm($caiguda);
 
-      // $this->sendTelegram($client,$ssids_rssis);
-      // return $caiguda;
 
-      $SectorLocalization=$this->algorithm($caiguda);
 
       if ($SectorLocalization != false) {
-        $this->storeCaiguda($client,$SectorLocalization);
+        $this->sendTelegram2("Posició",$PosicioLocalization);
+        $this->sendTelegram($client,$PosicioLocalization);
+        $this->storeCaiguda($client,$PosicioLocalization);
         $this->alertMessage();
-        $this->sendTelegram($client,$SectorLocalization);
       }
     }
-
 
 }

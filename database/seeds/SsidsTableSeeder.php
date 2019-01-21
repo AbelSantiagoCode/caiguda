@@ -19,6 +19,7 @@ class SsidsTableSeeder extends Seeder
         ['id'=>'AP_4'],
         ['id'=>'AP_5'],
         ['id'=>'AP_6'],
+        ['id'=>'AP_7']
       ]);
 
     }
