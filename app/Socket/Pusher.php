@@ -77,7 +77,7 @@ class Pusher implements WampServerInterface
     // This is our new stuff
     $context = new ZMQContext();
     $socket = $context->getSocket(\ZMQ::SOCKET_PUSH, 'my pusher');
-    $socket->connect("tcp://127.0.0.1:5555"); // maybe another port.
+    $socket->connect("tcp://192.168.43.159:5555"); // maybe another port.
 
     $socket->send(json_encode($data));
   }

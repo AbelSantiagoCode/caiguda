@@ -24,8 +24,11 @@ class CaigudaController extends Controller
         if($caigudes->count()){
 
             $user = Auth::user();
+            // if($user->horaris()->count() && $user->sectors()->count()){
 
-            return view('caiguda.show',compact('caigudes','user'));
+                return view('caiguda.show',compact('caigudes','user'));
+            // }
+
         }
         
         else{

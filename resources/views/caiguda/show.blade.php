@@ -2,19 +2,8 @@
 
 @section('content')
 
+
  @if($caigudes->count())
-
-
- <link rel="stylesheet" href="magnific-popup/magnific-popup.css">
-
-<!-- jQuery 1.7.2+ or Zepto.js 1.0+ -->
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
-<!-- Magnific Popup core JS file -->
-<script src="magnific-popup/jquery.magnific-popup.js"></script>
-
-
-
 
 
 <div class="container">

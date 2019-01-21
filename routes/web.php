@@ -1,7 +1,7 @@
 <?php
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
-
+// include "Telegram.php";
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,7 +20,16 @@ Route::get('/telegram', function () {
       'text'     => 'Prova text desde Laravel'
   ]
   ]);
-  return "Text sent to telegram";
+
+  $result = $client->post('https://api.telegram.org/bot615582162:AAGgt4fbrWwCtNCzEltixeg4r1_-WXay2AI/sendPhoto', [
+    'form_params' => [
+        'chat_id'  => '-1001271064871',
+        'photo' => "https://raw.githubusercontent.com/AbelSantiagoCode/caiguda/master/public/images/12112.png"
+    ]
+    ]);
+
+ 
+  return "Text sent to telegramm";
 });
 
 

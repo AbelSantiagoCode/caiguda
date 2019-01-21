@@ -954,15 +954,17 @@
       </script>
       
       <script>
-      var conn = new ab.Session('ws://localhost:8080',
+      var conn = new ab.Session('ws://192.168.43.159:8080',
+      
       function() {
+         console.log('WebSocket connection open');
         conn.subscribe('onAlertMessage', function(topic, data) {
           // This is where you would add the new article to the DOM (beyond the scope of this tutorial)
           // console.log('New data: topic_id: "' + topic + '"');
           // console.log(data.data);
           // similar behavior as an HTTP redirect
 
-          window.location.replace("http://127.0.0.1:8000/caiguda/show");
+          window.location.replace("http://192.168.43.159:8000/caiguda/show");
          
         });
       },

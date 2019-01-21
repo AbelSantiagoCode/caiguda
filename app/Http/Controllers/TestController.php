@@ -8,6 +8,8 @@ use App\Device;
 use App\Position;
 use App\Ssid;
 use App\Sector;
+use App\Horari;
+use App\Caiguda;
 use App\Http\Resources\Test as TestResource;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Exception\GuzzleException;
@@ -251,33 +253,21 @@ class TestController extends Controller
       $result = $client->post('https://api.telegram.org/bot615582162:AAGgt4fbrWwCtNCzEltixeg4r1_-WXay2AI/sendPhoto', [
           'form_params' => [
               'chat_id'  => '-1001271064871',
-              'photo' => "https://raw.githubusercontent.com/AbelSantiagoCode/caiguda/master/public/images/".$param2
+              'photo' => "https://raw.githubusercontent.com/AbelSantiagoCode/caiguda/master/public/images/".$param2.".png"
           ]
           ]);
 
 
     }
 
-    protected function sendTelegram2($param1,$param2)
-  {
-    $client = new Client(); //GuzzleHttp\Client
-    $result = $client->post('https://api.telegram.org/bot615582162:AAGgt4fbrWwCtNCzEltixeg4r1_-WXay2AI/sendMessage', [
-      'form_params' => [
-          'chat_id'  => '-1001271064871',
-          'text'     => $param1."\n".$param2
-      ]
-    ]);
-  }
-
-
 
     protected function alertMessage()
     {
       $data = [
-        'topic_id' => 'onAlertMessage',
-        'data'     => 'FALL DETECTED '.'somData'.rand(1,100)
+        'topic_id' => 'onAlertMessage'
       ];
       \App\Socket\Pusher::sentDataToServer($data);
+    
     }
 
     public function storeCaiguda($client,$posicio)
@@ -308,7 +298,6 @@ class TestController extends Controller
       $device = Device::find($idPlaca);
       $client = $device->client_dni;
 
-
       $caiguda = array();
       $positions = explode(";",$ssids_rssis);
       foreach ($positions as $position) {
@@ -318,12 +307,13 @@ class TestController extends Controller
       $PosicioLocalization=$this->algorithm($caiguda);
 
 
-
-      if ($SectorLocalization != false) {
-        $this->sendTelegram2("Posició",$PosicioLocalization);
-        $this->sendTelegram($client,$PosicioLocalization);
+      // $this->sendTelegram2("Posició",$PosicioLocalization);
+      if ($PosicioLocalization != false) {
         $this->storeCaiguda($client,$PosicioLocalization);
         $this->alertMessage();
+        $this->sendTelegram($client,$PosicioLocalization);
+        
+        
       }
     }
 
