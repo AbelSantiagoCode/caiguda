@@ -28,97 +28,93 @@
 			<div class="table-container">
 				<form method="POST" action="{{ route('user.update', $user->dni) }}"  role="form">
 					{{ csrf_field() }}
-					{{ method_field('PATCH') }}
+					{{ method_field('PUT') }}
 					
 
 
-					<div class="row">
-						<div class="col-xs-2 col-xs-2 col-sm-2">
-							<label>DNI</label>
-						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
+						<div class="row">
+							<div class="col-xs-2 col-xs-2 col-sm-2">
+								<label>DNI</label>
+							</div>
+							<div class="col-xs-6 col-sm-6 col-md-6">
 
-							<div class="form-group">
-								<input type="text" name="dni" id="dni" class="form-control input-sm" value="{{$user->dni}}">
+								<div class="form-group">
+									<input type="text" name="dni" id="dni" class="form-control input-sm" value="{{$user->dni}}">
+								</div>
 							</div>
 						</div>
-					</div>
 
-					<div class="row">
-						<div class="col-xs-2 col-xs-2 col-sm-2">
-							<label>Name</label>
-						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<input type="text" name="name" id="name" class="form-control input-sm" value="{{$user->name}}">
+						<div class="row">
+							<div class="col-xs-2 col-xs-2 col-sm-2">
+								<label>Name</label>
+							</div>
+							<div class="col-xs-6 col-sm-6 col-md-6">
+								<div class="form-group">
+									<input type="text" name="name" id="name" class="form-control input-sm" value="{{$user->name}}">
+								</div>
 							</div>
 						</div>
-					</div>
 
-					<div class="row">
-						<div class="col-xs-2 col-xs-2 col-sm-2">
-							<label>Email</label>
-						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<input type="text" name="email" id="email" class="form-control input-sm" value="{{$user->email}}">
+						<div class="row">
+							<div class="col-xs-2 col-xs-2 col-sm-2">
+								<label>Email</label>
+							</div>
+							<div class="col-xs-6 col-sm-6 col-md-6">
+								<div class="form-group">
+									<input type="text" name="email" id="email" class="form-control input-sm" value="{{$user->email}}">
+								</div>
 							</div>
 						</div>
-					</div>
 
-					<div class="row">
-						<div class="col-xs-2 col-xs-2 col-sm-2">
-							<label>Password</label>
-						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<input type="text" name="password" id="password" class="form-control input-sm" value="{{$user->password}}">
+						<div class="row">
+							<div class="col-xs-2 col-xs-2 col-sm-2">
+								<label>Password</label>
+							</div>
+							<div class="col-xs-6 col-sm-6 col-md-6">
+								<div class="form-group">
+									<input type="text" name="password" id="password" class="form-control input-sm" value="{{$user->password}}">
+								</div>
 							</div>
 						</div>
-					</div>
 
 
 
-					<div class="row">
-						<div class="col-xs-2 col-xs-2 col-sm-2">
-							<label>Rol</label>
-						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
+						<div class="row">
+							<div class="col-xs-2 col-xs-2 col-sm-2">
+								<label>Rol</label>
+							</div>
+							<div class="col-xs-6 col-sm-6 col-md-6">
+								<div class="form-group">
 
-								
-									@can('isRole','superadmin')
-										<select name='rol' class="form-control">
-
-										@foreach($roles as $rol)
-											
-											@if ($role == $rol->name)
-												<option value="{{$rol->name}}" selected="selected">{{$rol->name}}</option>
-												
-											@else
-												<option value="{{$rol->name}}">{{$rol->name}}</option>
-
-											@endif
-										@endforeach
-										</select> 	
-										
-									@elsecan('isRole', 'admin')
-
-										<input type="text" name="rol" id="rol" class="form-control input-sm" value="consumer" readonly>
-
-									@endcan
-							
 									
-								
-								
-						
+										@can('isRole','superadmin')
+											<select name='rol' class="form-control">
+
+											@foreach($roles as $rol)
+												
+												@if ($role == $rol->name)
+													<option value="{{$rol->name}}" selected="selected">{{$rol->name}}</option>
+													
+												@else
+													<option value="{{$rol->name}}">{{$rol->name}}</option>
+
+												@endif
+											@endforeach
+											</select> 	
 											
+										@elsecan('isRole', 'admin')
+
+											<input type="text" name="rol" id="rol" class="form-control input-sm" value="consumer" readonly>
+
+										@endcan
+								
+										
+											
+								</div>
 							</div>
 						</div>
-					</div>
 
 					
-					</div>
 					
 					<br>
 					<div class="row">
