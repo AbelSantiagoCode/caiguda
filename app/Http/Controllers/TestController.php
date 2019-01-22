@@ -183,6 +183,7 @@ class TestController extends Controller
         $localitzacion= $this->minimunPosition($sectorsPositions[$SectorMaxCounter]);
 
         return $localitzacion[0];
+        $this->sendTelegram2("Posició:",$localitzacion[0]);
       }
 
       return false;
@@ -261,6 +262,8 @@ class TestController extends Controller
     }
 
 
+
+
     protected function alertMessage()
     {
       $data = [
@@ -291,6 +294,7 @@ class TestController extends Controller
 
     public function testPost(Request $request)
     {
+   
       $idPlaca = $request->input('idPlaca');
       $ssids_rssis = $request->input('ssids_rssis');
       //$tipus_caiguda = $request->input('tipus_caiguda');
@@ -307,11 +311,12 @@ class TestController extends Controller
       $PosicioLocalization=$this->algorithm($caiguda);
 
 
-      // $this->sendTelegram2("Posició",$PosicioLocalization);
+      
       if ($PosicioLocalization != false) {
+        $this->sendTelegram($client,$PosicioLocalization);  
         $this->storeCaiguda($client,$PosicioLocalization);
         $this->alertMessage();
-        $this->sendTelegram($client,$PosicioLocalization);
+        
         
         
       }

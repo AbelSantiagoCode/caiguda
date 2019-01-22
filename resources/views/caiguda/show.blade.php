@@ -30,16 +30,20 @@
       $sector_id = $position->sector_id
     @endphp
 
-    @foreach($caiguda->horaris->map->id->toArray() as $hor)
-      @php
-        array_push($horaris, $hor);
-      @endphp
-    @endforeach
 
-    @if( count(array_intersect($horaris, $user->horaris->map->id->toArray()))==1 && in_array($sector_id, $user->sectors->map->id->toArray()))
-    <tr bgcolor="#FF0000">
-    @else
-    <tr>
+    @if($user->horaris()->count() && $user->sectors()->count())
+    
+      @foreach($caiguda->horaris->map->id->toArray() as $hor)
+        @php
+          array_push($horaris, $hor);
+        @endphp
+      @endforeach
+
+      @if( count(array_intersect($horaris, $user->horaris->map->id->toArray()))==1 && in_array($sector_id, $user->sectors->map->id->toArray()))
+      <tr bgcolor="#FF0000">
+      @else
+      <tr>
+      @endif
     @endif
 
     <td>{{$caiguda->client_dni}}</td>

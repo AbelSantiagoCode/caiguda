@@ -28,7 +28,7 @@
 			<div class="table-container">
 				<form method="POST" action="{{ route('user.update', $user->dni) }}"  role="form">
 					{{ csrf_field() }}
-					{{ method_field('PUT') }}
+					{{ method_field('PATCH') }}
 					
 
 

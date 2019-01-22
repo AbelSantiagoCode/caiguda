@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function() {
     Route::post('/store','UserController@store')->name('user.store')->middleware('can:create-user');
     Route::get('create','UserController@create')->name('user.create')->middleware('can:create-user');
     Route::delete('/destroy/{user}','UserController@destroy')->name('user.destroy')->middleware('can:delete-user');
-    Route::put('/update/{user}','UserController@update')->name('user.update')->middleware('can:update-user');
+    Route::patch('/update/{user}','UserController@update')->name('user.update')->middleware('can:update-user');
     Route::get('/show/{user}','UserController@show')->name('user.show')->middleware('can:read-user');
     Route::get('/edit/{user}','UserController@edit')->name('user.edit')->middleware('can:update-user');
 
